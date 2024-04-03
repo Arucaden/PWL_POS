@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\DataTables\KategoriDataTable;
 use App\Models\KategoriModel;
+use Illuminate\Http\RedirectResponse;
 
 class KategoriController extends Controller
 {
@@ -32,13 +33,13 @@ class KategoriController extends Controller
     public function create(){
         return view('kategori.create');
     }
-    public function store(Request $request){
-        KategoriModel::create([
-            'kategori_kode' => $request->kodeKategori,
-            'kategori_nama' => $request->namaKategori,
-        ]);
-        return redirect('/kategori');
-    }
+    // public function store(Request $request){
+    //     KategoriModel::create([
+    //         'kategori_kode' => $request->kodeKategori,
+    //         'kategori_nama' => $request->namaKategori,
+    //     ]);
+    //     return redirect('/kategori');
+    // }
     public function ubah($id){
         $kategori = KategoriModel::find($id);
         return view('kategori.edit', ['kategori' => $kategori]);
@@ -46,16 +47,33 @@ class KategoriController extends Controller
     public function ubah_simpan($id, Request $request){
         $kategori = KategoriModel::find($id);
         
-        $kategori->kategori_kode = $request->kodeKategori;
-        $kategori->kategori_nama = $request->namaKategori;
+        // $kategori->kategori_kode = $request->kodeKategori;
+        // $kategori->kategori_nama = $request->namaKategori;
 
-        $kategori->save();
+        // $kategori->save();
+
+        $request->validate([
+            'kategori_kode' => 'required|string|unique:kategoris,kode|bail',
+            'kategori_nama' => 'required|string|max:255|bail',
+        ]);
+
+        KategoriModel::create($request->all());
 
         return redirect('/kategori');
     }
+
     public function hapus($id){
         $kategori = KategoriModel::find($id);
         $kategori->delete();
+        return redirect('/kategori');
+    }
+
+    public function store(Request $request): RedirectResponse{
+        $validated = $request->validate([
+            'kategori_kode' => 'required',
+            'kategori_nama' => 'required',
+        ]);
+
         return redirect('/kategori');
     }
 }
