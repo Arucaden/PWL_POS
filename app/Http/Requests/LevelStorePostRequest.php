@@ -24,7 +24,6 @@ class LevelStorePostRequest extends FormRequest
         return [
             'level_kode' => 'required',
             'level_nama' => 'required',
-            
         ];
     }
 }
